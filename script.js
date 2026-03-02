@@ -138,11 +138,15 @@ function endGame() {
 }
 
 function start(level) {
-  // BUG FIX: Reset arrays and game state completely
+  // Add these lines to your existing start function in script.js
   lines = [];
   enemies = [];
-  player.isGamePaused = false;
-  pauseScreen.classList.add("hide");
+  player.isGamePaused = false; // Force unpause
+  player.start = true;
+  pauseScreen.classList.add("hide"); // Hide the pause UI
+  
+  // ... rest of your start logic
+}
   
   gameArea.classList.remove("fadeOut");
   startBtn.classList.add("hide");
