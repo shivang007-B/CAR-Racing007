@@ -1,123 +1,145 @@
+:root {
+  --neon-blue: #00f3ff;
+  --neon-pink: #ff00ff;
+  --road-grey: #1a1a1a;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .container {
-  background-image: linear-gradient(
-    174.2deg,
-    rgba(255, 244, 228, 1) 7.1%,
-    rgba(240, 246, 238, 1) 67.4%
-  );
-
+  /* Modern dark gradient background */
+  background: radial-gradient(circle at center, #2c3e50 0%, #000000 100%);
   width: 100%;
   height: 100vh;
   overflow: hidden;
-}
-
-.hide {
-  display: none;
-}
-
-.car,
-.enemy {
-  position: absolute;
-  bottom: 100px;
-  margin: auto;
-  width: 50px;
-  height: 100px;
-  background-color: white;
-  line-height: 38px;
-  font-size: 1.7em;
-  text-align: center;
-  vertical-align: middle;
-  background-image: url(car.png);
-  background-size: cover;
-  border-radius: 10px;
-}
-
-.line {
-  position: absolute;
-  height: 100px;
-  width: 10px;
-  margin-left: 195px;
-  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .score {
-  background-color: black;
-  height: 10vh;
-  text-align: center;
-  color: white;
-  font-size: 1.5em;
-  font-family: fantasy;
-  padding-top: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--neon-blue);
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neon-blue);
+  font-size: 2em;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px var(--neon-blue);
+  z-index: 10;
 }
 
 .gameArea {
-  background-color: black;
-  width: 400px;
+  background-color: var(--road-grey);
+  width: 450px;
   height: 100vh;
   overflow: hidden;
   position: relative;
   margin: auto;
+  /* Glowing road edges */
+  border-left: 4px solid var(--neon-blue);
+  border-right: 4px solid var(--neon-blue);
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
 }
 
-.start {
+/* Integrating your car.png */
+.car {
   position: absolute;
-  background-color: limegreen;
-  padding: 10px;
-  border-radius: 5px;
-  left: 48vw;
-  top: 50vh;
-  color: black;
-  z-index: 1;
-  text-align: center;
-  font-size: 1.5em;
-  cursor: pointer;
+  width: 60px; /* Slightly larger for modern feel */
+  height: 110px;
+  background-image: url('car.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+  z-index: 5;
+  transition: transform 0.1s ease; /* Smooth tilt effect */
 }
 
-.start:hover {
-  background-color: orangered;
+/* Enemy cars with neon glow */
+.enemy {
+  position: absolute;
+  width: 55px;
+  height: 100px;
+  background-image: url('car.png'); /* Using same asset for consistency */
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: hue-rotate(180deg) brightness(1.2) drop-shadow(0 0 10px var(--neon-pink));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
-  transform: scale(1.1);
+  font-weight: bold;
 }
 
-.pauseScreen {
+/* Modern Road Lines */
+.line {
+  position: absolute;
+  height: 80px;
+  width: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, var(--neon-blue), transparent);
+  box-shadow: 0 0 15px var(--neon-blue);
+  opacity: 0.6;
+}
+
+/* Modern Start Button */
+.start {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(244, 244, 44, 0.8);
+  padding: 20px 50px;
+  background: transparent;
+  color: var(--neon-blue);
+  border: 2px solid var(--neon-blue);
+  font-size: 1.8em;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.start:hover {
+  background: var(--neon-blue);
   color: black;
-  padding: 20px;
-  border-radius: 5px;
+  box-shadow: 0 0 40px var(--neon-blue);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Glassmorphism Pause & Game Over Screens */
+.pauseScreen, .game-over-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--neon-blue);
+  color: white;
+  padding: 40px;
+  border-radius: 15px;
   text-align: center;
-  z-index: 2;
+  min-width: 300px;
+  z-index: 100;
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; filter: brightness(1); }
+  to { opacity: 0; filter: brightness(0); }
 }
 
 .fadeOut {
-  animation-name: fadeOut;
-  animation-duration: 1s;
-  animation-fill-mode: forwards;
-}
-
-@media screen and (max-width: 500px) {
-  .gameArea {
-    width: 90%;
-  }
-  .startScreen {
-    width: 90%;
-    left: 5%;
-  }
+  animation: fadeOut 1.5s forwards;
 }
