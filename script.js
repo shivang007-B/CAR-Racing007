@@ -27,16 +27,21 @@ document.addEventListener("keydown", pressOn);
 document.addEventListener("keyup", pressOff);
 
 function pressOn(e) {
-  e.preventDefault();
+  // Only prevent default for game-related keys to avoid breaking browser shortcuts
+  if (Object.keys(keys).includes(e.key) || e.code === "Space") {
+    e.preventDefault();
+  }
+  
   keys[e.key] = true;
+  
   if (e.code === "Space") {
-    player.isGamePaused = !player.isGamePaused;
-    if (player.isGamePaused) {
-      pauseScreen.classList.remove("hide");
-      pauseScore.textContent = `Score: ${player.score}`;
-    } else {
-      pauseScreen.classList.add("hide");
-      if (player.start) {
+    if (player.start) { // Only allow pause if the game has actually started
+      player.isGamePaused = !player.isGamePaused;
+      if (player.isGamePaused) {
+        pauseScreen.classList.remove("hide");
+        pauseScore.textContent = `Score: ${player.score}`;
+      } else {
+        pauseScreen.classList.add("hide");
         window.requestAnimationFrame(playGame);
       }
     }
@@ -44,7 +49,6 @@ function pressOn(e) {
 }
 
 function pressOff(e) {
-  e.preventDefault();
   keys[e.key] = false;
 }
 
@@ -61,18 +65,18 @@ function moveLines() {
 function isCollide(a, b) {
   let aRect = a.getBoundingClientRect();
   let bRect = b.getBoundingClientRect();
+  // Added a small padding (buffer) to make collisions feel more fair to the player
   return !(
-    aRect.bottom < bRect.top ||
-    aRect.top > bRect.bottom ||
-    aRect.right < bRect.left ||
-    aRect.left > bRect.right
+    aRect.bottom < bRect.top + 10 ||
+    aRect.top > bRect.bottom - 10 ||
+    aRect.right < bRect.left + 5 ||
+    aRect.left > bRect.right - 5
   );
 }
 
 function moveEnemy() {
   enemies.forEach(function (item) {
     if (isCollide(car, item)) {
-      console.log("HIT");
       endGame();
     }
     if (item.y >= 1500) {
@@ -86,36 +90,35 @@ function moveEnemy() {
 }
 
 function playGame() {
-  if (player.isGamePaused) {
+  if (player.isGamePaused || !player.start) {
     return;
   }
+  
   moveLines();
   moveEnemy();
   let road = gameArea.getBoundingClientRect();
 
-  if (player.start) {
-    if (keys.ArrowUp && player.y > road.top) {
-      player.y -= player.speed;
-    }
-    if (keys.ArrowDown && player.y < road.bottom) {
-      player.y += player.speed;
-    }
-    if (keys.ArrowLeft && player.x > 0) {
-      player.x -= player.speed;
-    }
-    if (keys.ArrowRight && player.x < road.width - 50) {
-      player.x += player.speed;
-    }
+  if (keys.ArrowUp && player.y > road.top + 70) {
+    player.y -= player.speed;
+  }
+  if (keys.ArrowDown && player.y < road.bottom - 80) {
+    player.y += player.speed;
+  }
+  if (keys.ArrowLeft && player.x > 0) {
+    player.x -= player.speed;
+  }
+  if (keys.ArrowRight && player.x < road.width - 50) {
+    player.x += player.speed;
+  }
 
-    car.style.left = `${player.x}px`;
-    car.style.top = `${player.y}px`;
+  car.style.left = `${player.x}px`;
+  car.style.top = `${player.y}px`;
 
-    player.score++;
-    score.textContent = `Score: ${player.score}`;
+  player.score++;
+  score.textContent = `Score: ${player.score}`;
 
-    if (player.score % 1000 === 0) {
-      player.speed += 1;
-    }
+  if (player.score % 1000 === 0) {
+    player.speed += 1;
   }
 
   window.requestAnimationFrame(playGame);
@@ -123,21 +126,27 @@ function playGame() {
 
 function endGame() {
   player.start = false;
-  const highScore = localStorage.getItem("highScore");
+  const highScore = localStorage.getItem("highScore") || 0;
   if (player.score > highScore) {
     localStorage.setItem("highScore", player.score);
     score.innerHTML = `New High Score! Score: ${player.score}`;
   } else {
     score.innerHTML = `Game Over<br>Score was ${player.score}`;
   }
-  gameArea.classList.add("fadeOut"); // Add fade out animation
+  gameArea.classList.add("fadeOut");
   startBtn.classList.remove("hide");
 }
 
 function start(level) {
-  gameArea.classList.remove("fadeOut"); // Remove fade out animation
+  // BUG FIX: Reset arrays and game state completely
+  lines = [];
+  enemies = [];
+  player.isGamePaused = false;
+  pauseScreen.classList.add("hide");
+  
+  gameArea.classList.remove("fadeOut");
   startBtn.classList.add("hide");
-  gameArea.innerHTML = "";
+  gameArea.innerHTML = ""; // Clears old cars and lines from the DOM
 
   player.start = true;
   player.speed = 5 + (level - 1) * 2;
