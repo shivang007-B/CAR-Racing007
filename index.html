@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="script.js" defer></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JavaScript Racing</title>
+    <title>JavaScript Racing | Neon Edition</title>
     <meta
       name="description"
-      content="JavaScript Racing - A fun racing game built with JavaScript" />
+      content="A high-speed, modern neon racing game built with JavaScript." />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
   </head>
   <body>
     <div class="container">
-      <div class="score"></div>
+      <div class="score">Score: 0</div>
+      
       <div class="game">
-        <button class="start">Start</button>
+        <button class="start">Start Race</button>
+        
         <div class="gameArea"></div>
       </div>
+
       <div id="pauseScreen" class="pauseScreen hide">
-        <h2>Game Paused</h2>
-        <p id="pauseScore">Score: 0</p>
+        <h2>System Paused</h2>
+        <p id="pauseScore">Current Score: 0</p>
+        <p style="margin-top: 15px; font-size: 0.8em; color: #00f3ff;">Press SPACE to Resume</p>
       </div>
     </div>
   </body>
