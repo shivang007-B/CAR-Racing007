@@ -1,49 +1,74 @@
-JavaScript Racing: Neon Edition 🏎️💨
-Experience the high-octane thrill of Neon Edition, a modern, adrenaline-packed racing game where you maneuver your neon-charged vehicle through a digital highway, dodging obstacles and pushing for the highest score. Developed with a sleek "Cyberpunk" aesthetic using HTML5, CSS3, and Vanilla JavaScript.
+# 🏎️ CAR Racing 007 — Cyberpunk Neon Turbo Edition
 
-🕹️ Live Demo
-<img width="1362" height="673" alt="image" src="https://github.com/user-attachments/assets/15e0caf8-6617-480e-a11f-43e15ca38104" />
+A high-octane, real-time neon cyberpunk racing game built with **Vanilla JavaScript**, **CSS3 Glassmorphism**, **Vector SVG Icons**, and **Web Audio API Sound Synthesizer**.
 
+![CAR Racing 007 Demo](javascript-racing.gif)
 
-📸 Gameplay Preview
-High-speed dodging and score tracking in the Neon Edition.
+---
 
-✨ Features
-Cyberpunk Visuals: Immerse yourself in a modern neon UI with glassmorphism effects and glowing road boundaries.
+## ✨ Features
 
-Dynamic Difficulty: As your score climbs, the speed increases, testing your reflexes to the limit.
+- **⚡ Collectibles & Point System**:
+  - **Data Cubes / Coins**: Grants +250 PTS per pickup, tracks total coins, and triggers combo score multipliers (`x1`, `x2`, `x3`, `x4`).
+  - **Nitro Canisters**: Refills +40% of your Nitro Turbo reserve.
+  - **Shield Orbs**: Grants temporary invincibility aura that repels traffic collisions.
+  - **Repair Kits**: Restores vehicle hull health.
 
-Pause & Resume: Seamlessly pause your action with the Space bar and resume whenever you're ready.
+- **🚘 Cyber Car Selection Garage**:
+  - Choose between 3 unique playable vehicles with distinct stats (Speed, Armor, Handling):
+    - **Cyber Cruiser** (Balanced)
+    - **Phantom Speed** (High Speed & Agile Handling)
+    - **Vanguard Enforcer** (Heavy Armor Hull)
 
-Persistent High Scores: Compete against yourself with local storage high-score tracking.
+- **🔥 Nitro Hyper-Speed Boost**:
+  - Hold `SHIFT` or `W` to trigger Nitro Boost mode, boosting top speeds past 200 KM/H with particle thruster trails, screen motion lines, and point multipliers.
 
-Pure CSS Design: Optimized performance using CSS-based neon car designs, removing the need for heavy image assets.
+- **🔊 Synthesized Web Audio Engine**:
+  - Built-in Web Audio API sound synthesizer with zero external file dependencies:
+    - Pitch-shifted engine rumble matching vehicle velocity.
+    - Nitro swoop & coin chime sound effects.
+    - Deep collision crash sound effects.
+    - Mute / Audio toggle button.
 
-🛠️ Technical Breakdown
-DOM Manipulation: Extensive use of the Document Object Model to dynamically create and move road lines and enemy cars.
+- **🎨 Pure Vector SVG UI & Graphics**:
+  - High-definition vector SVG icons for all HUD telemetry, vehicle cards, rating indicators, and collectible items.
 
-Game Engine: Built on a requestAnimationFrame loop for silky-smooth 60FPS gameplay.
+- **📱 Responsiveness & Touch Controls**:
+  - Mobile touch overlay for smartphones/tablets, seamlessly alongside keyboard support (`WASD`, `Arrow Keys`, `SHIFT`, `SPACE`).
 
-Collision Logic: Precise AABB (Axis-Aligned Bounding Box) collision detection algorithms to handle interactions between player and enemies.
+- **🏆 High Score Persistence**:
+  - Local Storage saves your personal best score and coin totals across sessions.
 
-Responsive Layout: Designed to adapt to different screen sizes while maintaining the core 400px race track.
+---
 
-🎮 Controls
+## 🎮 Controls
 
-Action	   Control
-Move Up	   ArrowUp
-Move Down	ArrowDown
-Move Left	ArrowLeft
-Move Right	ArrowRight
+| Action | Keyboard | Touch / Mobile |
+| :--- | :--- | :--- |
+| **Steer Left / Right** | `A` / `D` or `←` / `→` | On-screen Left/Right Buttons |
+| **Accelerate / Brake** | `W` / `S` or `↑` / `↓` | — |
+| **Nitro Boost** | `SHIFT` or `W` | On-screen BOOST Button |
+| **Pause / Resume** | `SPACE` or `P` | — |
 
-Pause / Resume	Space Bar
+---
 
-🚀 How to Run Locally
-Clone the repository.
+## 🛠️ Tech Stack & Architecture
 
-Ensure you have index.html, styles.css, and script.js in the same directory.
+- **Core**: HTML5, CSS3, Vanilla JavaScript (ES6+).
+- **Typography**: Google Fonts (*Orbitron* & *Rajdhani*).
+- **Game Engine**: `requestAnimationFrame` 60FPS loop with AABB collision detection.
+- **Audio Synthesizer**: Web Audio API (`OscillatorNode`, `GainNode`, `BiquadFilterNode`).
+- **Icons**: Custom Inline Vector SVG Icons.
 
-Open index.html in any modern web browser.
+---
 
-🔧 Installation & Deployment
-This project is ready for one-click deployment on platforms like GitHub Pages or Vercel.
+## 🚀 Quick Start
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/shivang007-B/CAR-Racing007.git
+   ```
+2. Open `index.html` in any modern web browser or serve locally:
+   ```bash
+   npx serve .
+   ```

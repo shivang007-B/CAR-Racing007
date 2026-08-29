@@ -2,29 +2,278 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JavaScript Racing | Neon Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CAR Racing 007 | Cyberpunk Neon Edition</title>
     <meta
       name="description"
-      content="A high-speed, modern neon racing game built with JavaScript." />
+      content="A high-octane modern cyberpunk racing game built with JavaScript, Web Audio API, and rich point collectibles." />
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
   </head>
   <body>
+    <div class="bg-grid"></div>
+    
+    <button id="audioBtn" class="audio-toggle">
+      <span id="audioIcon">
+        <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+      </span>
+      <span id="audioText">SOUND: ON</span>
+    </button>
+
     <div class="container">
-      <div class="score">Score: 0</div>
-      
-      <div class="game">
-        <button class="start">Start Race</button>
-        
-        <div class="gameArea"></div>
+      <!-- Left HUD Dashboard -->
+      <div class="side-panel left-panel">
+        <div class="panel-title">
+          <span>Telemetry</span>
+          <span class="multiplier-badge" id="multiplierBadge">x1</span>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Current Score</div>
+          <div class="stat-value cyan" id="scoreDisplay">000000</div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">High Score</div>
+          <div class="stat-value highlight" id="highScoreDisplay">000000</div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Data Cubes / Coins</div>
+          <div class="stat-value" id="coinsDisplay">
+            <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>0</span>
+          </div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Distance Traveled</div>
+          <div class="stat-value" id="distanceDisplay">0.0 KM</div>
+        </div>
       </div>
 
-      <div id="pauseScreen" class="pauseScreen hide">
-        <h2>System Paused</h2>
-        <p id="pauseScore">Current Score: 0</p>
-        <p style="margin-top: 15px; font-size: 0.8em; color: #00f3ff;">Press SPACE to Resume</p>
+      <!-- Main Game Area Track -->
+      <div class="gameArea" id="gameArea">
+        <div class="road-side-glow road-side-left"></div>
+        <div class="road-side-glow road-side-right"></div>
       </div>
+
+      <!-- Right HUD Dashboard -->
+      <div class="side-panel right-panel">
+        <div class="panel-title">Vehicle Diagnostics</div>
+        <div class="stat-group">
+          <div class="stat-label">Velocity</div>
+          <div class="stat-value highlight" id="speedometer">0 KM/H</div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Nitro Reserve</div>
+          <div class="bar-container">
+            <div class="bar-fill nitro-bar" id="nitroBar" style="width: 100%;"></div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <div class="stat-label">Hull Integrity</div>
+          <div class="bar-container">
+            <div class="bar-fill health-bar" id="healthBar" style="width: 100%;"></div>
+          </div>
+        </div>
+        <div class="stat-group" style="margin-top: 25px;">
+          <div class="stat-label" style="margin-bottom: 8px;">Controls</div>
+          <ul class="controls-list">
+            <li><span>Steer Left / Right</span> <span class="key-badge">A / D or ← →</span></li>
+            <li><span>Accelerate / Brake</span> <span class="key-badge">W / S or ↑ ↓</span></li>
+            <li><span>Nitro Boost</span> <span class="key-badge">SHIFT / W</span></li>
+            <li><span>Pause Game</span> <span class="key-badge">SPACE / P</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mobile On-Screen Touch Controls -->
+      <div class="touch-controls">
+        <div class="touch-btn-group">
+          <div class="touch-btn" id="btnLeft">◄</div>
+          <div class="touch-btn" id="btnRight">►</div>
+        </div>
+        <div class="touch-btn-group">
+          <div class="touch-btn nitro-btn" id="btnNitro">BOOST</div>
+        </div>
+      </div>
+
+      <!-- Garage & Start Race Modal -->
+      <div id="startModal" class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-title">CAR Racing 007</div>
+          <div class="modal-subtitle">Neon Cyberpunk Turbo Edition</div>
+          
+          <div style="text-align: left; font-size: 0.85rem; color: #a0b0c8; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">Select Cyber Vehicle:</div>
+          
+          <div class="car-selector">
+            <!-- Car 1: Cyber Cruiser -->
+            <div class="car-card selected" data-car="cruiser">
+              <div class="car-card-name">CYBER CRUISER</div>
+              <svg class="car-svg" viewBox="0 0 60 100" fill="none">
+                <rect x="12" y="8" width="36" height="84" rx="8" fill="#111" stroke="#00f3ff" stroke-width="3"/>
+                <rect x="18" y="28" width="24" height="24" rx="4" fill="#00f3ff" opacity="0.8"/>
+                <circle cx="19" cy="16" r="3" fill="#fff"/>
+                <circle cx="41" cy="16" r="3" fill="#fff"/>
+                <rect x="8" y="18" width="4" height="16" rx="2" fill="#00f3ff"/>
+                <rect x="48" y="18" width="4" height="16" rx="2" fill="#00f3ff"/>
+                <rect x="8" y="66" width="4" height="16" rx="2" fill="#00f3ff"/>
+                <rect x="48" y="66" width="4" height="16" rx="2" fill="#00f3ff"/>
+              </svg>
+              <div class="car-card-stats">
+                <div class="stat-row-item">
+                  <span>Speed</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row-item">
+                  <span>Armor</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row-item">
+                  <span>Handling</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Car 2: Phantom Speed -->
+            <div class="car-card" data-car="phantom">
+              <div class="car-card-name">PHANTOM SPEED</div>
+              <svg class="car-svg" viewBox="0 0 60 100" fill="none">
+                <path d="M30 6 L52 38 L46 86 L30 96 L14 86 L8 38 Z" fill="#111" stroke="#ffe600" stroke-width="3"/>
+                <polygon points="20,40 40,40 35,62 25,62" fill="#ffe600" opacity="0.8"/>
+                <circle cx="19" cy="22" r="3" fill="#fff"/>
+                <circle cx="41" cy="22" r="3" fill="#fff"/>
+              </svg>
+              <div class="car-card-stats">
+                <div class="stat-row-item">
+                  <span>Speed</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row-item">
+                  <span>Armor</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row-item">
+                  <span>Handling</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Car 3: Vanguard Enforcer -->
+            <div class="car-card" data-car="vanguard">
+              <div class="car-card-name">VANGUARD ENFORCER</div>
+              <svg class="car-svg" viewBox="0 0 60 100" fill="none">
+                <rect x="8" y="10" width="44" height="80" rx="6" fill="#111" stroke="#ff007f" stroke-width="3"/>
+                <rect x="14" y="24" width="32" height="30" rx="3" fill="#ff007f" opacity="0.8"/>
+                <rect x="14" y="14" width="8" height="4" fill="#fff"/>
+                <rect x="38" y="14" width="8" height="4" fill="#fff"/>
+                <rect x="4" y="18" width="4" height="20" fill="#ff007f"/>
+                <rect x="52" y="18" width="4" height="20" fill="#ff007f"/>
+              </svg>
+              <div class="car-card-stats">
+                <div class="stat-row-item">
+                  <span>Speed</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row-item">
+                  <span>Armor</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="icon icon-pink" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </div>
+                </div>
+                <div class="stat-row-item">
+                  <span>Handling</span>
+                  <div class="rating-row">
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                    <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button id="startBtn" class="btn-cyber">Launch Engine</button>
+        </div>
+      </div>
+
+      <!-- Pause Modal -->
+      <div id="pauseScreen" class="modal-overlay hide">
+        <div class="modal-card">
+          <div class="modal-title">SYSTEM PAUSED</div>
+          <div class="modal-subtitle">Game Suspended</div>
+          <div class="stat-group" style="margin-bottom: 20px;">
+            <div class="stat-label">Current Run Score</div>
+            <div class="stat-value cyan" id="pauseScore">0</div>
+          </div>
+          <button id="resumeBtn" class="btn-cyber">Resume Race</button>
+        </div>
+      </div>
+
+      <!-- Game Over Modal -->
+      <div id="gameOverModal" class="modal-overlay hide">
+        <div class="modal-card">
+          <div class="modal-title" style="color: var(--neon-magenta); text-shadow: 0 0 20px var(--neon-magenta);">CRASH DETECTED</div>
+          <div class="modal-subtitle">Vehicle Wrecked</div>
+          
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="stat-label">Final Score</div>
+              <div class="stat-value cyan" id="finalScore">0</div>
+            </div>
+            <div class="summary-item">
+              <div class="stat-label">Best Record</div>
+              <div class="stat-value highlight" id="bestScore">0</div>
+            </div>
+            <div class="summary-item">
+              <div class="stat-label">Data Cubes</div>
+              <div class="stat-value" id="finalCoins">
+                <svg class="icon icon-yellow" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>0</span>
+              </div>
+            </div>
+            <div class="summary-item">
+              <div class="stat-label">Distance</div>
+              <div class="stat-value" id="finalDistance">0.0 KM</div>
+            </div>
+          </div>
+
+          <button id="restartBtn" class="btn-cyber">Play Again</button>
+        </div>
+      </div>
+
     </div>
   </body>
 </html>
