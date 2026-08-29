@@ -13,25 +13,39 @@
   <body>
     <div class="bg-grid"></div>
     
-    <button id="audioBtn" class="audio-toggle">
-      <span id="audioIcon">
-        <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
-        </svg>
-      </span>
-      <span id="audioText">SOUND: ON</span>
-    </button>
+    <div class="top-controls">
+      <button id="audioBtn" class="audio-toggle">
+        <span id="audioIcon">
+          <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </span>
+        <span id="audioText">SOUND: ON</span>
+      </button>
+
+      <button id="pauseBtn" class="pause-toggle">
+        <span id="pauseIcon">
+          <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/>
+            <rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span id="pauseText">PAUSE</span>
+      </button>
+    </div>
 
     <div class="container">
       <!-- Left HUD Dashboard -->
       <div class="side-panel left-panel">
         <div class="panel-title">
           <span>Telemetry</span>
-          <span class="multiplier-badge" id="multiplierBadge">x1</span>
         </div>
         <div class="stat-group">
-          <div class="stat-label">Current Score</div>
+          <div class="stat-label stat-label-row">
+            <span>Current Score</span>
+            <span class="multiplier-badge" id="multiplierBadge">x1</span>
+          </div>
           <div class="stat-value cyan" id="scoreDisplay">000000</div>
         </div>
         <div class="stat-group">
@@ -87,16 +101,7 @@
         </div>
       </div>
 
-      <!-- Mobile On-Screen Touch Controls -->
-      <div class="touch-controls">
-        <div class="touch-btn-group">
-          <div class="touch-btn" id="btnLeft">◄</div>
-          <div class="touch-btn" id="btnRight">►</div>
-        </div>
-        <div class="touch-btn-group">
-          <div class="touch-btn nitro-btn" id="btnNitro">BOOST</div>
-        </div>
-      </div>
+      <!-- Mobile controls are now gesture-based: drag to steer, multi-touch to boost -->
 
       <!-- Garage & Start Race Modal -->
       <div id="startModal" class="modal-overlay">

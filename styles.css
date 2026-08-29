@@ -134,6 +134,13 @@ body {
   letter-spacing: 1px;
 }
 
+.stat-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .stat-value {
   font-family: 'Orbitron', sans-serif;
   font-size: 1.6rem;
@@ -655,67 +662,21 @@ body {
   font-size: 1.3rem;
 }
 
-/* Mobile Touch Controls */
+/* Mobile Touch Controls (Deprecated) */
 .touch-controls {
-  display: none;
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 50;
-  pointer-events: none;
+  display: none !important;
 }
 
-.touch-btn-group {
-  display: flex;
-  gap: 15px;
-  pointer-events: auto;
-}
-
-.touch-btn {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  background: rgba(0, 243, 255, 0.15);
-  border: 2px solid var(--neon-cyan);
-  color: var(--neon-cyan);
-  font-size: 1.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
-  touch-action: manipulation;
-}
-
-.touch-btn:active {
-  background: var(--neon-cyan);
-  color: #000;
-  transform: scale(0.92);
-}
-
-.touch-btn.nitro-btn {
-  border-color: var(--neon-magenta);
-  color: var(--neon-magenta);
-  background: rgba(255, 0, 127, 0.2);
-  width: 75px;
-  height: 75px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 900;
-}
-
-.touch-btn.nitro-btn:active {
-  background: var(--neon-magenta);
-  color: #fff;
-}
-
-.audio-toggle {
+.top-controls {
   position: absolute;
   top: 15px;
   right: 15px;
+  display: flex;
+  gap: 8px;
+  z-index: 60;
+}
+
+.audio-toggle, .pause-toggle {
   background: rgba(0, 243, 255, 0.1);
   border: 1px solid var(--neon-cyan);
   color: var(--neon-cyan);
@@ -726,13 +687,18 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 60;
   backdrop-filter: blur(8px);
+  transition: all 0.2s;
 }
 
-.audio-toggle:hover {
+.audio-toggle:hover, .pause-toggle:hover {
   background: var(--neon-cyan);
   color: #000;
+  box-shadow: 0 0 12px var(--neon-cyan);
+}
+
+.pause-toggle {
+  padding: 8px 12px;
 }
 
 .hide {
@@ -742,13 +708,114 @@ body {
 /* Responsive queries */
 @media (max-width: 900px) {
   .side-panel {
+    position: absolute;
+    top: 10px;
+    width: calc(50% - 15px);
+    max-width: 220px;
+    background: rgba(10, 11, 16, 0.85);
+    border: 1px solid var(--glass-border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+    z-index: 10;
+  }
+  
+  .left-panel {
+    left: 10px;
+  }
+  
+  .right-panel {
+    right: 10px;
+  }
+  
+  /* Hide panel headers for a clean mobile HUD */
+  .left-panel .panel-title,
+  .right-panel .panel-title {
     display: none;
   }
+  
+  /* Hide non-essential telemetry on mobile */
+  .left-panel .stat-group:nth-child(3), /* High Score */
+  .left-panel .stat-group:nth-child(5) { /* Distance */
+    display: none;
+  }
+  
+  .right-panel .stat-group:nth-child(5) { /* Controls list */
+    display: none;
+  }
+  
+  /* Adjust layout spacing */
+  .stat-group {
+    margin-bottom: 6px;
+  }
+  
+  .stat-label {
+    font-size: 0.72rem;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+  }
+  
+  .stat-value {
+    font-size: 1.1rem;
+    gap: 4px;
+  }
+  
+  .bar-container {
+    height: 8px;
+    margin-top: 3px;
+  }
+  
   .gameArea {
     width: 100vw;
     border: none;
   }
-  .touch-controls {
+  
+  /* Reposition controls to bottom corner on mobile for easy thumb access */
+  .top-controls {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  #audioText, #pauseText {
+    display: none;
+  }
+  .audio-toggle, .pause-toggle {
+    padding: 8px;
+    border-radius: 50%;
+  }
+  .top-controls {
+    bottom: 15px;
+    right: 15px;
+    gap: 10px;
+  }
+  .car-selector {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .car-card {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  .car-card-name {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+    flex: 1;
+    text-align: left;
+  }
+  .car-svg {
+    width: 36px;
+    height: 48px;
+    margin: 0;
+  }
+  .car-card-stats {
+    margin-top: 0;
+    width: 130px;
+    flex-shrink: 0;
   }
 }

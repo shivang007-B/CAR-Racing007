@@ -154,7 +154,18 @@ const CAR_TYPES = {
   vanguard: { name: "Vanguard Enforcer", speed: 5, maxSpeed: 14, health: 140, handling: 5, color: "#ff007f" }
 };
 
-const LANES = [40, 130, 220, 310];
+let LANES = [40, 130, 220, 310];
+
+function updateLanes() {
+  const roadWidth = gameArea ? gameArea.clientWidth : 440;
+  const laneWidth = roadWidth / 4;
+  LANES = [
+    Math.floor(0.5 * laneWidth - 26),
+    Math.floor(1.5 * laneWidth - 26),
+    Math.floor(2.5 * laneWidth - 26),
+    Math.floor(3.5 * laneWidth - 26)
+  ];
+}
 
 let gameState = {
   active: false,
@@ -286,18 +297,89 @@ document.addEventListener("keyup", e => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") keys.nitro = false;
 });
 
-const bindTouch = (elemId, keyProp) => {
-  const btn = document.getElementById(elemId);
-  if (!btn) return;
-  btn.addEventListener("touchstart", e => { e.preventDefault(); keys[keyProp] = true; });
-  btn.addEventListener("touchend", e => { e.preventDefault(); keys[keyProp] = false; });
-  btn.addEventListener("mousedown", () => keys[keyProp] = true);
-  btn.addEventListener("mouseup", () => keys[keyProp] = false);
+// Mobile pause button bind
+const pauseBtn = document.getElementById("pauseBtn");
+if (pauseBtn) {
+  pauseBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    sounds.init();
+    togglePause();
+  });
+}
+
+// Touch gesture state
+let touchState = {
+  isDragging: false,
+  startX: 0,
+  startY: 0,
+  carStartX: 0,
+  carStartY: 0
 };
 
-bindTouch("btnLeft", "left");
-bindTouch("btnRight", "right");
-bindTouch("btnNitro", "nitro");
+// Bind touch events to gameArea for gesture controls (drag steer, multi-touch nitro)
+gameArea.addEventListener("touchstart", e => {
+  if (!gameState.active || gameState.paused) return;
+  
+  sounds.init();
+  
+  // Single touch drag steering
+  if (e.touches.length === 1) {
+    touchState.isDragging = true;
+    touchState.startX = e.touches[0].clientX;
+    touchState.startY = e.touches[0].clientY;
+    touchState.carStartX = playerPos.x;
+    touchState.carStartY = playerPos.y;
+  }
+  
+  // Multi-touch triggers nitro boost
+  if (e.touches.length > 1) {
+    keys.nitro = true;
+  }
+}, { passive: true });
+
+gameArea.addEventListener("touchmove", e => {
+  if (!gameState.active || gameState.paused || !touchState.isDragging) return;
+  
+  const roadWidth = gameArea.clientWidth || 440;
+  const minX = 15;
+  const maxX = roadWidth - 15 - 52;
+  
+  const currentX = e.touches[0].clientX;
+  const deltaX = currentX - touchState.startX;
+  
+  playerPos.x = touchState.carStartX + deltaX;
+  
+  // Keep inside road bounds
+  playerPos.x = Math.max(minX, Math.min(maxX, playerPos.x));
+  
+  updatePlayerCarPosition();
+}, { passive: true });
+
+gameArea.addEventListener("touchend", e => {
+  if (e.touches.length === 0) {
+    touchState.isDragging = false;
+    keys.nitro = false;
+  } else if (e.touches.length === 1) {
+    // Prevent jumpiness by resetting origin when a finger is lifted
+    touchState.startX = e.touches[0].clientX;
+    touchState.startY = e.touches[0].clientY;
+    touchState.carStartX = playerPos.x;
+    touchState.carStartY = playerPos.y;
+    keys.nitro = false;
+  }
+}, { passive: true });
+
+// Listen to screen/window resize to recalculate lanes & limits
+window.addEventListener("resize", () => {
+  updateLanes();
+  if (gameState.active && playerCarElem) {
+    const roadWidth = gameArea.clientWidth || 440;
+    const minX = 15;
+    const maxX = roadWidth - 15 - 52;
+    playerPos.x = Math.max(minX, Math.min(maxX, playerPos.x));
+    updatePlayerCarPosition();
+  }
+});
 
 // ==========================================
 // 5. GAME INITIALIZATION & SETUP
@@ -333,8 +415,12 @@ function startGame() {
   collectibles = [];
   particles = [];
 
+  const roadWidth = gameArea.clientWidth || 440;
+  const laneWidth = roadWidth / 4;
+  updateLanes();
+
   for (let l = 1; l < 4; l++) {
-    const xPos = l * 110;
+    const xPos = l * laneWidth;
     for (let i = 0; i < 6; i++) {
       let line = document.createElement("div");
       line.classList.add("lane-marker");
@@ -373,7 +459,9 @@ function startGame() {
   }
 
   gameArea.appendChild(playerCarElem);
-  playerPos = { x: 194, y: 560 };
+  const roadHeight = gameArea.clientHeight || 800;
+  playerPos = { x: Math.floor(roadWidth / 2 - 26), y: Math.floor(roadHeight - 240) };
+  lastPlayerX = playerPos.x;
   updatePlayerCarPosition();
 
   for (let i = 0; i < 3; i++) {
@@ -423,10 +511,17 @@ function gameLoop() {
   sounds.updateEngine(gameState.speed, gameState.isBoosting);
 
   const steerSpeed = carConfig.handling;
-  if (keys.left && playerPos.x > 15) playerPos.x -= steerSpeed;
-  if (keys.right && playerPos.x < 370) playerPos.x += steerSpeed;
-  if (keys.up && playerPos.y > 80) playerPos.y -= 2;
-  if (keys.down && playerPos.y < 620) playerPos.y += 2;
+  const roadWidth = gameArea.clientWidth || 440;
+  const roadHeight = gameArea.clientHeight || 800;
+  const minX = 15;
+  const maxX = roadWidth - 15 - 52;
+  const minY = 80;
+  const maxY = roadHeight - 90 - 20;
+
+  if (keys.left && playerPos.x > minX) playerPos.x -= steerSpeed;
+  if (keys.right && playerPos.x < maxX) playerPos.x += steerSpeed;
+  if (keys.up && playerPos.y > minY) playerPos.y -= 2;
+  if (keys.down && playerPos.y < maxY) playerPos.y += 2;
 
   updatePlayerCarPosition();
 
@@ -476,14 +571,24 @@ function gameLoop() {
   animFrameId = requestAnimationFrame(gameLoop);
 }
 
+let lastPlayerX = 194;
 function updatePlayerCarPosition() {
+  if (!playerCarElem) return;
   playerCarElem.style.left = playerPos.x + "px";
   playerCarElem.style.top = playerPos.y + "px";
   
   let rot = 0;
-  if (keys.left) rot = -6;
-  if (keys.right) rot = 6;
+  if (keys.left) {
+    rot = -6;
+  } else if (keys.right) {
+    rot = 6;
+  } else {
+    const diff = playerPos.x - lastPlayerX;
+    if (diff < -1) rot = -6;
+    else if (diff > 1) rot = 6;
+  }
   playerCarElem.style.transform = `rotate(${rot}deg)`;
+  lastPlayerX = playerPos.x;
 }
 
 // ==========================================
