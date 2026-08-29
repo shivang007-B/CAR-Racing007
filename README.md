@@ -2,7 +2,9 @@
 
 A high-octane, real-time neon cyberpunk racing game built with **Vanilla JavaScript**, **CSS3 Glassmorphism**, **Vector SVG Icons**, and **Web Audio API Sound Synthesizer**.
 
-![CAR Racing 007 Demo](javascript-racing.gif)
+<img width="1366" height="768" alt="Screenshot (620)" src="https://github.com/user-attachments/assets/8fb3dca4-6932-4336-bc83-9e5f0042ccbb" />
+
+
 
 ---
 
