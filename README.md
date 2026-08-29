@@ -1,8 +1,11 @@
 # 🏎️ CAR Racing 007 — Cyberpunk Neon Turbo Edition
 
 A high-octane, real-time neon cyberpunk racing game built with **Vanilla JavaScript**, **CSS3 Glassmorphism**, **Vector SVG Icons**, and **Web Audio API Sound Synthesizer**.
+<img width="1366" height="651" alt="Screenshot (620)" src="https://github.com/user-attachments/assets/7c33dcfb-5da9-4d49-856a-809550902926" />
 
-<img width="1366" height="768" alt="Screenshot (620)" src="https://github.com/user-attachments/assets/8fb3dca4-6932-4336-bc83-9e5f0042ccbb" />
+
+<img width="1366" height="658" alt="Screenshot (621)" src="https://github.com/user-attachments/assets/7f72fce8-ce8c-4eb8-a5c8-5f46f460e0d7" />
+
 
 
 
